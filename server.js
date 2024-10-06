@@ -2,16 +2,16 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const sequelize = require("./config");
-const authRoute = require("./routes/auth");
-const companyRoutes = require("./routes/company");
-const userRoutes = require("./routes/user");
-const articleRoutes = require("./routes/article");
+const authRoute = require("./api/auth");
+const companyRoutes = require("./api/company");
+const userRoutes = require("./api/users");
+const articleRoutes = require("./api/articles");
 const seedUsers = require("./seeders/userSeeder");
-const path = require("path");
 
 const app = express();
-app.use(express.static(path.join(__dirname, "public")));
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+app.use(express.static("public"));
+app.use("/uploads", express.static("uploads"));
 app.use(cors());
 app.use(bodyParser.json());
 
@@ -22,12 +22,19 @@ app.use("/articles", articleRoutes);
 
 const startServer = async () => {
   try {
-    // await sequelize.sync({ force: true }); //drop tables
+    // await sequelize.sync({ force: true }); // Drop tables
     await seedUsers();
-    app.listen(3000, () => console.log("Server running on port 3000"));
+    return app;
   } catch (error) {
     console.error("Unable to connect to the database:", error);
+    throw error;
   }
 };
 
-startServer();
+if (require.main === module) {
+  startServer().then(() => {
+    app.listen(3000, () => console.log("Server running on port 3000"));
+  });
+} else {
+  module.exports = startServer;
+}
