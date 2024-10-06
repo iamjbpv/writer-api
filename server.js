@@ -2,10 +2,10 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const sequelize = require("./config");
-const authRoute = require("./api/auth");
-const companyRoutes = require("./api/company");
-const userRoutes = require("./api/users");
-const articleRoutes = require("./api/articles");
+const authRoute = require("./routes/auth");
+const companyRoutes = require("./routes/company");
+const userRoutes = require("./routes/user");
+const articleRoutes = require("./routes/article");
 const seedUsers = require("./seeders/userSeeder");
 
 const app = express();
