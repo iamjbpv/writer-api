@@ -22,23 +22,22 @@ app.use("/articles", articleRoutes);
 
 const startServer = async () => {
   try {
-    await sequelize.sync(); // Sync your database
+    // await sequelize.sync({ force: true }); // Drop tables
     await seedUsers();
     return app; // Return the app instance
   } catch (error) {
     console.error("Unable to connect to the database:", error);
-    throw error; // Rethrow error to prevent function from starting
+    throw error; // Rethrow error to prevent serverless function from starting
   }
 };
 
-// Export for Vercel
-module.exports = (req, res) => {
-  startServer()
-    .then((app) => {
-      app(req, res); // Pass the request and response to the Express app
-    })
-    .catch((error) => {
-      console.error("Error starting server:", error);
-      res.status(500).send("Internal Server Error");
-    });
-};
+// This will be used by Vercel
+if (require.main === module) {
+  startServer().then(() => {
+    const PORT = process.env.PORT || 3000; // Use dynamic port
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    console.log(`Server is running on port ${PORT}`);
+  });
+} else {
+  module.exports = startServer; // Export for Vercel
+}
