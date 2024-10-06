@@ -8,7 +8,7 @@ const authenticateToken = require("../middleware/authMiddleware");
 const isEditor = (req, res, next) => {
   const user = req.user;
 
-  if (user && user.Type === "Editor") {
+  if (user && user.type === "Editor") {
     next();
   } else {
     res
